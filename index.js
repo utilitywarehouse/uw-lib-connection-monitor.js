@@ -71,6 +71,11 @@ module.exports = class Monitor {
         this.probes.push(probe);
         return probe;
     }
+    redis(instance) {
+        let probe = Probe.redis(instance);
+        this.probes.push(probe);
+        return probe;
+    }
     on(instance) {
         let probe = Probe.instance(instance);
         this.probes.push(probe);
