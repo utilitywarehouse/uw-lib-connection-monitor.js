@@ -1,0 +1,9 @@
+{
+  "name": "@utilitywarehouse/uw-lib-connection-monitor.js",
+  "version": "1.0.0",
+  "description": "Utility to translate events from common drivers (mongo, redis etc) into a standard set. To be used with operational endpoints.",
+  "main": "index.js",
+  "repository": "git@github.com:utilitywarehouse/uw-lib-connection-monitor.js.git",
+  "author": "Michael Donat <michael.donat@me.com>",
+  "license": "MIT"
+}
