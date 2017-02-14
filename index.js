@@ -2,15 +2,19 @@ const EventEmitter = require('events').EventEmitter;
 
 class Probe extends EventEmitter {
     markAsConnected(details) {
+        if (!this.connected) {
+            this.emit('connected', details);
+        }
         this.connected = true;
         this.details = details;
-        this.emit('connected', details);
     }
 
     markAsDisconnected(details) {
+        if (this.connected) {
+            this.emit('disconnected', details);
+        }
         this.connected = false;
         this.details = details;
-        this.emit('disconnected', details);
     }
 
     as(name) {
@@ -19,7 +23,7 @@ class Probe extends EventEmitter {
     }
 
     required() {
-        this.isrequired = true;
+        this.isRequired = true;
         return this;
     }
 
@@ -36,12 +40,20 @@ class Probe extends EventEmitter {
 
 Probe.mongo = function(instance) {
     let probe = new Probe();
-    probe.markAsConnected();
     instance.on('connect', (event) => probe.markAsConnected(event));
     instance.on('reconnect', (event) => probe.markAsConnected(event));
     instance.on('close', (event) => probe.markAsDisconnected(event));
     return probe;
 };
+
+Probe.redis = function(instance) {
+    let probe = new Probe();
+    instance.on('ready', (event) => probe.markAsConnected(event));
+    instance.on('connect', (event) => probe.markAsConnected(event));
+    instance.on('reconnecting', (event) => probe.markAsDisconnected(event));
+    instance.on('end', (event) => probe.markAsDisconnected(event));
+    return probe;
+}
 
 Probe.instance = function(instance) {
     let probe = new Probe();
