@@ -53,12 +53,19 @@ Probe.redis = function(instance) {
     instance.on('reconnecting', (event) => probe.markAsDisconnected(event));
     instance.on('end', (event) => probe.markAsDisconnected(event));
     return probe;
-}
+};
 
 Probe.instance = function(instance) {
     let probe = new Probe();
     instance.on('connect', (event) => probe.markAsConnected(event));
     instance.on('disconnect', (event) => probe.markAsDisconnected(event));
+    return probe;
+};
+
+Probe.endpoint = function(instance) {
+    let probe = new Probe();
+    instance.on('available', (event) => probe.markAsConnected(event));
+    instance.on('unavailable', (event) => probe.markAsDisconnected(event));
     return probe;
 }
 
@@ -73,6 +80,11 @@ module.exports = class Monitor {
     }
     redis(instance) {
         let probe = Probe.redis(instance);
+        this.probes.push(probe);
+        return probe;
+    }
+    endpoint(instance) {
+        let probe = Probe.endpoint(instance);
         this.probes.push(probe);
         return probe;
     }
